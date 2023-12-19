@@ -3,12 +3,14 @@ import {
   POKE_LIST_API_URL,
   POKE_SPRITES_API_URL,
 } from "../constants/constants";
+import { PokeCard } from "./PokeCard";
+import { Container, Flex, SimpleGrid, Center } from "@chakra-ui/react";
 import axios from "axios";
 
 const PokemonList = () => {
   const [pokemonList, setPokemonList] = useState([]);
   const [pokemons, setPokemons] = useState([]);
-  const [nextPage, setNextPage] = useState(POKE_LIST_API_URL + "?limit=5");
+  const [nextPage, setNextPage] = useState(POKE_LIST_API_URL + "?limit=20");
   const [loadMore, setLoadMore] = useState(true);
 
   const fetchPokemon = async () => {
@@ -65,16 +67,28 @@ const PokemonList = () => {
   }, [nextPage]); // Add scroll event listener
 
   return (
-    <div>
+    <div w={"100%"}>
       <h1>Pokemon List</h1>
-      <ul>
+      <SimpleGrid
+        as="ul"
+        // columns={4}
+        // columns={{ base: 1, sm: 2, md: 3, lg: 3, xl: 4 }}
+        w="60%"
+        // w={{ base: "80%", sm: "100%", md: "60%" }}
+        m="0 auto"
+        minChildWidth="140px"
+        // justifyContent="center"
+        spacing={4}
+        // spacing={"10px"}
+      >
         {pokemons.map((pokemon) => (
-          <li key={pokemon.name}>
-            <h3>{pokemon.name}</h3>
-            <img src={pokemon.imgUrl} />
-          </li>
+            <PokeCard
+              key={pokemon.name}
+              name={pokemon.name}
+              imgSrc={pokemon.imgUrl}
+            />
         ))}
-      </ul>
+      </SimpleGrid>
       {loadMore && <button onClick={fetchPokemon}>Load more</button>}
     </div>
   );

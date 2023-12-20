@@ -7,7 +7,7 @@ export const ThemeButton = () => {
   const label =
     colorMode === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode";
   return (
-    <Tooltip label={label}>
+    <Tooltip label={label} placement='auto-start'>
       <IconButton
         icon={icon}
         variant="ghost"

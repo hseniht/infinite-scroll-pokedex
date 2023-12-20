@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   POKE_LIST_API_URL,
   POKE_SPRITES_API_URL,
@@ -10,10 +10,10 @@ import axios from "axios";
 const PokemonList = () => {
   const [pokemonList, setPokemonList] = useState([]);
   const [pokemons, setPokemons] = useState([]);
-  const [nextPage, setNextPage] = useState(POKE_LIST_API_URL + "?limit=20");
+  const [nextPage, setNextPage] = useState(POKE_LIST_API_URL + "?limit=18");
   const [loadMore, setLoadMore] = useState(true);
 
-  const fetchPokemon = async () => {
+  const fetchPokemon = useCallback(async () => {
     try {
       if (nextPage === null) {
         // Handle case when there is no more data
@@ -30,7 +30,7 @@ const PokemonList = () => {
     } catch (error) {
       console.error("Error 'catching' Pokemon:", error);
     }
-  };
+  }, [nextPage, setLoadMore, setPokemonList]);
 
   const updatePokemons = () => {
     const currentList = [...pokemonList];
@@ -42,6 +42,8 @@ const PokemonList = () => {
     setPokemons(items);
   };
 
+  const containerRef = useRef();
+
   useEffect(() => {
     fetchPokemon();
   }, []); // Fetch initial data
@@ -50,24 +52,39 @@ const PokemonList = () => {
     updatePokemons();
   }, [pokemonList]);
 
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop ===
-      document.documentElement.offsetHeight
-    ) {
-      fetchPokemon();
-    }
-  };
-
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
+    const handleScroll = () => {
+      const container = containerRef.current;
+
+      if (container) {
+        const isAtBottom =
+          container.scrollTop + container.clientHeight ===
+          container.scrollHeight;
+
+        if (isAtBottom) {
+          // Handle reaching the bottom of the scroll
+          console.log("debug: scroll to bottom");
+          fetchPokemon();
+        }
+      }
     };
-  }, [nextPage]); // Add scroll event listener
+
+    const container = containerRef.current;
+
+    if (container) {
+      //if exist
+      container.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [fetchPokemon]);
 
   return (
-    <div w={"100%"}>
+    <div id="PokeList" w={"100%"} ref={containerRef}>
       {/* <h1>Pokemon List</h1> */}
       <SimpleGrid
         as="ul"

@@ -7,6 +7,7 @@ const Navbar = () => {
       align="center"
       justify="space-between"
       p={4}
+      h="70px"
       //   gap={2}
       //   bg="teal.500"
       //   color="white"

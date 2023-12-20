@@ -68,7 +68,7 @@ const PokemonList = () => {
 
   return (
     <div w={"100%"}>
-      <h1>Pokemon List</h1>
+      {/* <h1>Pokemon List</h1> */}
       <SimpleGrid
         as="ul"
         // columns={4}
@@ -82,11 +82,11 @@ const PokemonList = () => {
         // spacing={"10px"}
       >
         {pokemons.map((pokemon) => (
-            <PokeCard
-              key={pokemon.name}
-              name={pokemon.name}
-              imgSrc={pokemon.imgUrl}
-            />
+          <PokeCard
+            key={pokemon.name}
+            name={pokemon.name}
+            imgSrc={pokemon.imgUrl}
+          />
         ))}
       </SimpleGrid>
       {loadMore && <button onClick={fetchPokemon}>Load more</button>}

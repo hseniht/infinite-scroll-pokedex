@@ -1,11 +1,11 @@
 import PokemonList from "./components/PokemonList";
-import { ThemeButton } from "./components/Buttons";
+import Navbar from "./components/NavBar";
 import "./App.css";
 
 function App() {
   return (
     <>
-      <ThemeButton />
+      <Navbar />
       <PokemonList />
     </>
   );

@@ -4,7 +4,16 @@ import {
   POKE_SPRITES_API_URL,
 } from "../constants/constants";
 import { PokeCard } from "./PokeCard";
-import { Container, Flex, SimpleGrid, Center } from "@chakra-ui/react";
+import {
+  Container,
+  Flex,
+  SimpleGrid,
+  Center,
+  Spinner,
+  Button,
+  Box,
+  Spacer,
+} from "@chakra-ui/react";
 import axios from "axios";
 
 const PokemonList = () => {
@@ -12,9 +21,11 @@ const PokemonList = () => {
   const [pokemons, setPokemons] = useState([]);
   const [nextPage, setNextPage] = useState(POKE_LIST_API_URL + "?limit=18");
   const [loadMore, setLoadMore] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchPokemon = useCallback(async () => {
     try {
+      setLoading(true);
       if (nextPage === null) {
         // Handle case when there is no more data
         console.warn("Empty response or null results");
@@ -29,6 +40,8 @@ const PokemonList = () => {
       setNextPage(response.data.next);
     } catch (error) {
       console.error("Error 'catching' Pokemon:", error);
+    } finally {
+      setLoading(false);
     }
   }, [nextPage, setLoadMore, setPokemonList]);
 
@@ -63,8 +76,12 @@ const PokemonList = () => {
 
         if (isAtBottom) {
           // Handle reaching the bottom of the scroll
-          console.log("debug: scroll to bottom");
+          console.log("debug: scroll to bottomm");
           fetchPokemon();
+          if (!loading) {
+            // avoid debouncing
+            container.removeEventListener("scroll", handleScroll);
+          }
         }
       }
     };
@@ -84,20 +101,9 @@ const PokemonList = () => {
   }, [fetchPokemon]);
 
   return (
-    <div id="PokeList" w={"100%"} ref={containerRef}>
+    <Box id="PokeList" ref={containerRef} p={4}>
       {/* <h1>Pokemon List</h1> */}
-      <SimpleGrid
-        as="ul"
-        // columns={4}
-        // columns={{ base: 1, sm: 2, md: 3, lg: 3, xl: 4 }}
-        w="60%"
-        // w={{ base: "80%", sm: "100%", md: "60%" }}
-        m="0 auto"
-        minChildWidth="140px"
-        // justifyContent="center"
-        spacing={4}
-        // spacing={"10px"}
-      >
+      <SimpleGrid as="ul" w="60%" m="0 auto" minChildWidth="140px" spacing={4}>
         {pokemons.map((pokemon) => (
           <PokeCard
             key={pokemon.name}
@@ -106,8 +112,21 @@ const PokemonList = () => {
           />
         ))}
       </SimpleGrid>
-      {loadMore && <button onClick={fetchPokemon}>Load more</button>}
-    </div>
+      <Flex
+        alignItems={"center"}
+        flexDirection={"column"}
+        p={4}
+        gap={4}
+        justifyContent={"space-between"}
+      >
+        {loading && <Spinner size="lg" thickness="3px" speed="0.65s" />}
+        {loadMore && (
+          <Button hidden={loading} onClick={fetchPokemon}>
+            Load more
+          </Button>
+        )}
+      </Flex>
+    </Box>
   );
 };
 
